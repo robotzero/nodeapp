@@ -1,0 +1,39 @@
+service: streams
+
+plugins:
+  - serverless-webpack
+  - serverless-offline
+  - serverless-dynamodb-local
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  defaults:
+    stage: dev
+    region: us-east-1
+
+package:
+  individually: true
+  exclude:
+    - lib/**
+    - functions/**
+
+custom:
+  webpackIncludeModules: true,
+  dynamodb:
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
+    migration:
+      dir: offline/dynamodb-schema
+
+functions:
+  open-stream:
+    handler: src/functions/open-stream/index.run
+    events:
+      - http:
+          method: GET
+          path: v1/open-stream

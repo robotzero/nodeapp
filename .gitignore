@@ -1,0 +1,6 @@
+.serverless
+.webpack
+.dynamodb
+node_modules
+.idea
+npm-debug.log
