@@ -6,12 +6,13 @@
   "author": "Agnieszka K Kocinski",
   "license": "GPL",
   "dependencies": {
-    "uuid": "^2.0.3",
-    "lodash-es": "^4.17.11"
+    "@akanass/rx-http-request": "^3.1.0",
+    "lodash-es": "^4.17.11",
+    "rxjs": "^6.5.1",
+    "uuid": "^2.0.3"
   },
   "devDependencies": {
     "aws-sdk": "^2.12.0",
-    "serverless-offline": "^4.9.4",
     "babel-core": "^6.26.0",
     "babel-jest": "^16.0.0",
     "babel-loader": "^7.1.4",
@@ -29,11 +30,14 @@
     "jest-cli": "^24.4.0",
     "jest-mock-console": "^0.4.2",
     "json-loader": "^0.5.4",
-    "serverless-plugin-webpack": "^1.5.1",
-    "serverless-webpack": "^4.4.0",
     "serverless-dynamodb-local": "^0.2.18",
+    "serverless-offline": "^4.9.4",
+    "serverless-plugin-webpack": "^1.5.1",
+    "serverless-step-functions": "^1.17.0",
+    "serverless-step-functions-offline": "^2.1.2",
+    "serverless-webpack": "^4.4.0",
+    "shebang-loader": "^0.0.1",
     "webpack": "^3.11.0",
-    "webpack-node-externals": "^1.6.0",
-    "shebang-loader": "^0.0.1"
+    "webpack-node-externals": "^1.6.0"
   }
 }

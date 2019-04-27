@@ -22,6 +22,9 @@ package:
 
 custom:
   webpackIncludeModules: true,
+  stepFunctionsOffline:
+    stepOne: open-stream #(v2.0)
+    stepTwo: secondLambda #(v2.0)
   dynamodb:
     start:
       port: 8000
@@ -37,3 +40,10 @@ functions:
       - http:
           method: POST
           path: v1/open-stream
+
+  fake-service:
+    handler: src/functions/fake-service/index.run
+    events:
+      - http:
+          method: POST
+          path: stream-callback
