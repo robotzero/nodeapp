@@ -23,14 +23,14 @@ module.exports = {
                 use: {
                     loader: 'json-loader'
                 }
-            },
-            {
-                test: /node_modules\/JSONStream\/index\.js$/,
-                use: [
-                    {loader: 'shebang-loader'},
-                    {loader: 'babel-loader'},
-                ]
             }
+            // {
+            //     test: /node_modules\/JSONStream\/index\.js$/,
+            //     use: [
+            //         // {loader: 'shebang-loader'},
+            //         {loader: 'babel-loader'},
+            //     ]
+            // }
         ]
     },
     output: {

@@ -9,8 +9,10 @@ provider:
   name: aws
   runtime: nodejs8.10
   environment:
-    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    STREAMS: ${self:service}-${opt:stage, self:provider.stage}
+    ACTIVE_STREAMS: active-${self:service}-${opt:stage, self:provider.stage}
     MAX_STREAMS: 3
+    TTL: 60
   defaults:
     stage: dev
     region: us-east-1
@@ -29,7 +31,7 @@ custom:
       inMemory: true
       migrate: true
     migration:
-      dir: offline/dynamodb-schema
+      dir: offline/dynamodbSchema
 
 functions:
   open-stream:
@@ -38,3 +40,17 @@ functions:
       - http:
           method: POST
           path: v1/open-stream
+
+  ping-stream:
+    handler: src/functions/ping-stream/index.run
+    events:
+      - http:
+          method: POST
+          path: v1/ping-stream
+
+  close-stream:
+    handler: src/functions/close-stream/index.run
+    events:
+      - http:
+          method: POST
+          path: v1/close-stream

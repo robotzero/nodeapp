@@ -1,6 +1,7 @@
 import DynamoResource from "../../lib/DynamoResource";
 import dynamodbclient from '../../lib/dynamodbclient';
 import isEmpty from 'lodash/isEmpty';
+import intersection from 'lodash/intersection';
 import uuid from 'uuid/v4';
 
 export const run = async (event) => {
@@ -9,7 +10,7 @@ export const run = async (event) => {
 
     try {
         const currentItem = await dbResource.getItem({
-            TableName: process.env.DYNAMODB_TABLE,
+            TableName: process.env.STREAMS,
             Key: {
                 user_id: data.userId
             }
@@ -19,21 +20,48 @@ export const run = async (event) => {
 
         if (isEmpty(currentItem)) {
             await dbResource.createNew({
-                TableName: process.env.DYNAMODB_TABLE,
+                TableName: process.env.STREAMS,
                 Item: {
                     user_id: data.userId,
-                    entity_version: newVersion
+                    entity_version: newVersion,
+                    streams: []
                 }
             });
         }
-        if (isEmpty(currentItem) || currentItem.Item.streams.length < parseInt(process.env.MAX_STREAMS)) {
+
+        await dbResource.createNew({
+            TableName: process.env.ACTIVE_STREAMS,
+            Item: {
+                user_id: data.userId,
+                stream_id: data.streamId,
+                ttl: Math.floor(Date.now() / 1000) + process.env.TTL
+            }
+        });
+
+        const activeStreams = await dbResource.query({
+            TableName: process.env.ACTIVE_STREAMS,
+            IndexName: "user_id",
+            ExpressionAttributeValues: {
+                ":kv": data.userId
+            },
+            KeyConditionExpression: "user_id = :kv",
+        });
+
+        const activeStreamsId = activeStreams.Items.map(activeStream => {
+            return activeStream.stream_id;
+        });
+
+        const aliveActiveStreams = intersection(activeStreamsId, isEmpty(currentItem) ? [] : currentItem.Item.streams);
+
+        if (aliveActiveStreams.length < parseInt(process.env.MAX_STREAMS)) {
+            aliveActiveStreams.push(data.streamId);
             const currentEntityVersion = isEmpty(currentItem) ? newVersion : currentItem.Item.entity_version;
             await dbResource.updateItem({
-                TableName: process.env.DYNAMODB_TABLE,
+                TableName: process.env.STREAMS,
                 Key: {user_id: data.userId},
-                UpdateExpression: "SET #streams = list_append(if_not_exists(#streams, :empty_list), :values), #entity_version = :new_version",
+                UpdateExpression: "SET #streams = :values, #entity_version = :new_version",
                 ExpressionAttributeNames: {"#streams": "streams", "#entity_version": "entity_version"},
-                ExpressionAttributeValues: {":values": [data.streamId], ":empty_list": [], ":new_version": uuid(), ":current_entity_version": currentEntityVersion},
+                ExpressionAttributeValues: {":values": aliveActiveStreams, ":new_version": uuid(), ":current_entity_version": currentEntityVersion},
                 ConditionExpression: '#entity_version = :current_entity_version',
                 ReturnValues: 'ALL_NEW'
             });
