@@ -1,6 +1,5 @@
 import DynamoResource from "../../lib/DynamoResource";
 import dynamodbclient from '../../lib/dynamodbclient';
-import uuid from 'uuid/v4';
 
 export const run = async (event) => {
     const data = JSON.parse(event.body);
@@ -24,7 +23,7 @@ export const run = async (event) => {
         console.log(exception.message);
         return {
             statusCode: 500,
-            error: exception.message
+            body: JSON.stringify({exception: exception.message})
         }
     }
 };

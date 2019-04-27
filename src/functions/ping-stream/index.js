@@ -11,7 +11,7 @@ export const run = async (event) => {
             Item: {
                 user_id: data.userId,
                 stream_id: data.streamId,
-                ttl: Math.floor(Date.now() / 1000) + process.env.TTL
+                ttl: Math.floor(Date.now() / 1000) + parseInt(process.env.TTL)
             }
         });
 
@@ -27,7 +27,7 @@ export const run = async (event) => {
         console.log(exception.message);
         return {
             statusCode: 500,
-            error: exception.message
+            body: JSON.stringify({exception: exception.message})
         }
     }
 };

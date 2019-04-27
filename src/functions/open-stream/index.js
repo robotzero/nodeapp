@@ -34,7 +34,7 @@ export const run = async (event) => {
             Item: {
                 user_id: data.userId,
                 stream_id: data.streamId,
-                ttl: Math.floor(Date.now() / 1000) + process.env.TTL
+                ttl: Math.floor(Date.now() / 1000) + parseInt(process.env.TTL)
             }
         });
 
@@ -55,13 +55,14 @@ export const run = async (event) => {
 
         if (aliveActiveStreams.length < parseInt(process.env.MAX_STREAMS)) {
             aliveActiveStreams.push(data.streamId);
+            const streams = [...new Set(aliveActiveStreams)];
             const currentEntityVersion = isEmpty(currentItem) ? newVersion : currentItem.Item.entity_version;
             await dbResource.updateItem({
                 TableName: process.env.STREAMS,
                 Key: {user_id: data.userId},
                 UpdateExpression: "SET #streams = :values, #entity_version = :new_version",
                 ExpressionAttributeNames: {"#streams": "streams", "#entity_version": "entity_version"},
-                ExpressionAttributeValues: {":values": aliveActiveStreams, ":new_version": uuid(), ":current_entity_version": currentEntityVersion},
+                ExpressionAttributeValues: {":values": streams, ":new_version": uuid(), ":current_entity_version": currentEntityVersion},
                 ConditionExpression: '#entity_version = :current_entity_version',
                 ReturnValues: 'ALL_NEW'
             });
@@ -71,7 +72,7 @@ export const run = async (event) => {
                 body: JSON.stringify({
                     status: 200,
                     streamId: data.streamId,
-                    instanceId: data.instanceId
+                    userId: data.userId
                 }),
             };
         }
@@ -81,14 +82,14 @@ export const run = async (event) => {
             body: JSON.stringify({
                 status: 403,
                 streamId: data.streamId,
-                instanceId: data.instanceId
+                userId: data.userId
             })
         }
     } catch (exception) {
         console.log(exception.message);
         return {
             statusCode: 500,
-            error: exception.message
+            body: JSON.stringify({exception: exception.message})
         }
     }
 };
