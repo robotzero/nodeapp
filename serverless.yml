@@ -38,10 +38,3 @@ functions:
       - http:
           method: POST
           path: v1/open-stream
-
-  fake-service:
-    handler: src/functions/fake-service/index.run
-    events:
-      - http:
-          method: POST
-          path: stream-callback
