@@ -1,21 +1,19 @@
 {
-  "Table": {
-    "TableName": "streams-dev",
-    "KeySchema": [
-      {
-        "AttributeName": "user_id",
-        "KeyType": "HASH"
-      }
-    ],
-    "AttributeDefinitions": [
-      {
-        "AttributeName": "user_id",
-        "AttributeType": "S"
-      }
-    ],
-    "ProvisionedThroughput": {
-      "ReadCapacityUnits": 1,
-      "WriteCapacityUnits": 1
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "user_id",
+      "AttributeType": "S"
     }
+  ],
+  "TableName": "streams-dev",
+  "KeySchema": [
+    {
+      "AttributeName": "user_id",
+      "KeyType": "HASH"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 1,
+    "WriteCapacityUnits": 1
   }
 }

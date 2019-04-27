@@ -35,5 +35,5 @@ functions:
     handler: src/functions/open-stream/index.run
     events:
       - http:
-          method: GET
+          method: POST
           path: v1/open-stream
