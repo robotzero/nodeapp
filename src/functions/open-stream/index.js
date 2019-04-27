@@ -1,65 +1,63 @@
 import DynamoResource from "../../lib/DynamoResource";
 import dynamodbclient from '../../lib/dynamodbclient';
 import isEmpty from 'lodash/isEmpty';
-import httpPost from "../../lib/httpPost";
 
 export const run = async (event) => {
     const data = JSON.parse(event.body);
     const dbResource = new DynamoResource(dynamodbclient(process.env));
 
     try {
+        // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.ReadConsistency.html
         const currentItem = await dbResource.getItem({
             TableName: process.env.DYNAMODB_TABLE,
+            ConsistentRead: true,
             Key: {
                 user_id: data.userId
             }
         });
         if (isEmpty(currentItem)) {
+            console.log("empty");
             await dbResource.createNew({
                 TableName: process.env.DYNAMODB_TABLE,
                 Item: {'user_id': data.userId, 'streams': [data.streamId]}
             });
-            await httpPost({
-                body: {
-                    status: 200,
+            return {
+                statusCode: 200,
+                body: JSON.stringify({
                     streamId: data.streamId,
                     instanceId: data.instanceId
-                },
-                json: true
-            });
+                }),
+            };
         } else {
-            console.log(currentItem);
-            if (currentItem.Item.streams.length < 3) {
+            if (currentItem.Item.streams.length < parseInt(process.env.MAX_STREAMS)) {
+                console.log("update");
+                console.log(data.streamId);
+                console.log(currentItem.Item.streams);
                 await dbResource.updateItem({
                     TableName: process.env.DYNAMODB_TABLE,
                     Key: {user_id: data.userId},
                     UpdateExpression: "SET #streams = list_append(#streams, :values)",
                     ExpressionAttributeNames: {"#streams": "streams"},
-                    ExpressionAttributeValues: {":values" : [data.streamId]},
+                    ExpressionAttributeValues: {":values": ['IKK']},
                     ReturnValues: 'ALL_NEW'
                 });
-                await httpPost({
-                    body: {
-                        status: 200,
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify({
                         streamId: data.streamId,
                         instanceId: data.instanceId
-                    },
-                    json: true
-                });
-            } else {
-                await httpPost({
-                    body: {
-                        status: 403,
-                        streamId: data.streamId,
-                        instanceId: data.instanceId
-                    },
-                    json: true
-                });
+                    }),
+                };
             }
-        }
-        return {
-            statusCode: 201,
-            body: JSON.stringify({message: 'Request accepted'})
+
+            return {
+                statusCode: 403,
+                body: JSON.stringify({
+                    status: 403,
+                    streamId: data.streamId,
+                    instanceId: data.instanceId
+                })
+            }
         }
     } catch (exception) {
         console.log(exception.message);

@@ -10,6 +10,7 @@ provider:
   runtime: nodejs8.10
   environment:
     DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+    MAX_STREAMS: 3
   defaults:
     stage: dev
     region: us-east-1
@@ -22,9 +23,6 @@ package:
 
 custom:
   webpackIncludeModules: true,
-  stepFunctionsOffline:
-    stepOne: open-stream #(v2.0)
-    stepTwo: secondLambda #(v2.0)
   dynamodb:
     start:
       port: 8000
