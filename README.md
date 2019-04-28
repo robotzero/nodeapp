@@ -1,14 +1,15 @@
 ## Setup
+Please install aws cli: https://github.com/aws/aws-cli
 
 ```bash
 npm install
-serverless dynamodb install
+node_modules/serverless/bin/serverless dynamodb install
 ```
 
 ## Start
 
 ```bash
-serverless offline start
+node_modules/serverless/bin/serverless offline start
 ```
 
 To set automatic record expiry:
@@ -127,7 +128,7 @@ The user has been authenticated by different service.
 
 The deployment to AWS step is missing, as I do not own private AWS account and did not want to guess and hope for the best that it would work.
 
-The app is relying on ability to set TTL in dynamodb (not possible to simulate locally) that allows items to be automatically deleted from the database.
+The app is relying on ability to set TTL in dynamodb that allows items to be automatically deleted from the database.
 (https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/TTL.html)
 
 The client app needs to ping v1/ping-stream endpoint every x seconds in order to inform the app that the stream is alive.
