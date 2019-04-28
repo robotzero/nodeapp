@@ -7,10 +7,10 @@ const uuid = require('uuid/v4');
 describe('Open stream', () => {
     beforeEach(() => {
         process.env.stage = 'test';
-        process.env.ACTIVE_STREAMS = 'active-streams';
-        process.env.STREAMS = 'streams';
-        process.env.TTL = '60';
-        process.env.MAX_STREAMS = 3;
+        process.env.EPHEMERAL_ACTIVE_STREAMS = 'ephemeral-active-streams-test';
+        process.env.AGGREGATED_STREAMS_STATUS = 'streams';
+        process.env.STREAM_EXPIRY = '60';
+        process.env.MAX_ALLOWED_STREAMS = 3;
         uuid.mockImplementationOnce(() => '1234').mockImplementationOnce(() => '12345');
     });
 
@@ -48,11 +48,11 @@ describe('Open stream', () => {
 
         expect(DynamoResource.prototype.createNew).toHaveBeenCalledWith(
             {
-                TableName: process.env.ACTIVE_STREAMS,
+                TableName: process.env.EPHEMERAL_ACTIVE_STREAMS,
                 Item: {
                     user_id: "1",
                     stream_id: "5",
-                    ttl: Math.floor(Date.now() / 1000) + parseInt(process.env.TTL)
+                    ttl: Math.floor(Date.now() / 1000) + parseInt(process.env.STREAM_EXPIRY)
                 }
             },
         );
@@ -91,7 +91,7 @@ describe('Open stream', () => {
 
         expect(DynamoResource.prototype.createNew).toHaveBeenCalledWith(
             {
-                TableName: process.env.STREAMS,
+                TableName: process.env.AGGREGATED_STREAMS_STATUS,
                 Item: {
                     user_id: '1',
                     streams: [],
@@ -134,7 +134,7 @@ describe('Open stream', () => {
 
         expect(DynamoResource.prototype.updateItem).toHaveBeenCalledWith(
             {
-                TableName: process.env.STREAMS,
+                TableName: process.env.AGGREGATED_STREAMS_STATUS,
                 Key: {user_id: "1"},
                 UpdateExpression: "SET #streams = :values, #entity_version = :new_version",
                 ExpressionAttributeNames: {"#streams": "streams", "#entity_version": "entity_version"},
@@ -178,7 +178,7 @@ describe('Open stream', () => {
 
         expect(DynamoResource.prototype.createNew).not.toHaveBeenCalledWith(
             {
-                TableName: process.env.STREAMS,
+                TableName: process.env.AGGREGATED_STREAMS_STATUS,
                 Item: {
                     user_id: '1',
                     streams: [],
@@ -189,7 +189,7 @@ describe('Open stream', () => {
 
         expect(DynamoResource.prototype.updateItem).toHaveBeenCalledWith(
             {
-                TableName: process.env.STREAMS,
+                TableName: process.env.AGGREGATED_STREAMS_STATUS,
                 Key: {user_id: "1"},
                 UpdateExpression: "SET #streams = :values, #entity_version = :new_version",
                 ExpressionAttributeNames: {"#streams": "streams", "#entity_version": "entity_version"},
@@ -233,7 +233,7 @@ describe('Open stream', () => {
 
         expect(DynamoResource.prototype.createNew).not.toHaveBeenCalledWith(
             {
-                TableName: process.env.STREAMS,
+                TableName: process.env.AGGREGATED_STREAMS_STATUS,
                 Item: {
                     user_id: '1',
                     streams: [],
@@ -244,7 +244,7 @@ describe('Open stream', () => {
 
         expect(DynamoResource.prototype.updateItem).toHaveBeenCalledWith(
             {
-                TableName: process.env.STREAMS,
+                TableName: process.env.AGGREGATED_STREAMS_STATUS,
                 Key: {user_id: "1"},
                 UpdateExpression: "SET #streams = :values, #entity_version = :new_version",
                 ExpressionAttributeNames: {"#streams": "streams", "#entity_version": "entity_version"},
@@ -288,7 +288,7 @@ describe('Open stream', () => {
 
         expect(DynamoResource.prototype.updateItem).toHaveBeenCalledWith(
             {
-                TableName: process.env.STREAMS,
+                TableName: process.env.AGGREGATED_STREAMS_STATUS,
                 Key: {user_id: "1"},
                 UpdateExpression: "SET #streams = :values, #entity_version = :new_version",
                 ExpressionAttributeNames: {"#streams": "streams", "#entity_version": "entity_version"},
@@ -332,7 +332,7 @@ describe('Open stream', () => {
 
         expect(DynamoResource.prototype.updateItem).toHaveBeenCalledWith(
             {
-                TableName: process.env.STREAMS,
+                TableName: process.env.AGGREGATED_STREAMS_STATUS,
                 Key: {user_id: "1"},
                 UpdateExpression: "SET #streams = :values, #entity_version = :new_version",
                 ExpressionAttributeNames: {"#streams": "streams", "#entity_version": "entity_version"},
@@ -376,7 +376,7 @@ describe('Open stream', () => {
 
         expect(DynamoResource.prototype.updateItem).toHaveBeenCalledWith(
             {
-                TableName: process.env.STREAMS,
+                TableName: process.env.AGGREGATED_STREAMS_STATUS,
                 Key: {user_id: "1"},
                 UpdateExpression: "SET #streams = :values, #entity_version = :new_version",
                 ExpressionAttributeNames: {"#streams": "streams", "#entity_version": "entity_version"},

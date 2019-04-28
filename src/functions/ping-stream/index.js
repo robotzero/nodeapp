@@ -7,11 +7,11 @@ export const run = async (event) => {
 
     try {
         await dbResource.putItem({
-            TableName: process.env.ACTIVE_STREAMS,
+            TableName: process.env.EPHEMERAL_ACTIVE_STREAMS,
             Item: {
                 user_id: data.userId,
                 stream_id: data.streamId,
-                ttl: Math.floor(Date.now() / 1000) + parseInt(process.env.TTL)
+                ttl: Math.floor(Date.now() / 1000) + parseInt(process.env.STREAM_EXPIRY)
             }
         });
 

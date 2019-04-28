@@ -9,13 +9,13 @@ provider:
   name: aws
   runtime: nodejs8.10
   environment:
-    STREAMS: ${self:service}-${opt:stage, self:provider.stage}
-    ACTIVE_STREAMS: active-${self:service}-${opt:stage, self:provider.stage}
-    MAX_STREAMS: 3
-    TTL: 60
+    EPHEMERAL_ACTIVE_STREAMS: ephemeral-active-streams-${opt:stage, self:provider.stage} # ephemeral list of streams
+    AGGREGATED_STREAMS_STATUS: aggregated-streams-status-${opt:stage, self:provider.stage} # aggregated, not super up to date stream statuses
+    MAX_ALLOWED_STREAMS: 3 # max number of streams user is allowed to open
+    STREAM_EXPIRY: 60 # in seconds
   defaults:
     stage: dev
-    region: us-east-1
+    region: eu-west-1
 
 package:
   individually: true

@@ -5,8 +5,8 @@ describe('Close stream', () => {
     beforeEach(() => {
         mockDynamoResource();
         process.env.stage = 'test';
-        process.env.ACTIVE_STREAMS = 'active-streams';
-        process.env.STREAMS = 'streams';
+        process.env.EPHEMERAL_ACTIVE_STREAMS = 'ephemeral-active-streams-test';
+        process.env.AGGREGATED_STREAMS_STATUS = 'aggregated-streams-status-test';
     });
 
     it('deletes an item from dynamodb', async () => {
@@ -26,7 +26,7 @@ describe('Close stream', () => {
 
         expect(DynamoResource.prototype.deleteItem).toHaveBeenCalledWith(
             {
-                TableName: process.env.ACTIVE_STREAMS,
+                TableName: process.env.EPHEMERAL_ACTIVE_STREAMS,
                 Key: {
                     stream_id: "5",
                 }
@@ -53,7 +53,7 @@ describe('Close stream', () => {
 
         expect(DynamoResource.prototype.deleteItem).toHaveBeenCalledWith(
             {
-                TableName: process.env.ACTIVE_STREAMS,
+                TableName: process.env.EPHEMERAL_ACTIVE_STREAMS,
                 Key: {
                     stream_id: "5",
                 }

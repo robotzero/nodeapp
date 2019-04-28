@@ -7,7 +7,7 @@ export const run = async (event) => {
 
     try {
         await dbResource.deleteItem({
-            TableName: process.env.ACTIVE_STREAMS,
+            TableName: process.env.EPHEMERAL_ACTIVE_STREAMS,
             Key: {stream_id: data.streamId}
         });
 

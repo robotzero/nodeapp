@@ -9,7 +9,7 @@
       "AttributeType": "S"
     }
   ],
-  "TableName": "active-streams-dev",
+  "TableName": "ephemeral-active-streams-dev",
   "KeySchema": [
     {
       "AttributeName": "stream_id",

@@ -10,7 +10,7 @@ export const run = async (event) => {
 
     try {
         const currentItem = await dbResource.getItem({
-            TableName: process.env.STREAMS,
+            TableName: process.env.AGGREGATED_STREAMS_STATUS,
             Key: {
                 user_id: data.userId
             }
@@ -20,7 +20,7 @@ export const run = async (event) => {
 
         if (isEmpty(currentItem)) {
             await dbResource.createNew({
-                TableName: process.env.STREAMS,
+                TableName: process.env.AGGREGATED_STREAMS_STATUS,
                 Item: {
                     user_id: data.userId,
                     entity_version: newVersion,
@@ -30,16 +30,16 @@ export const run = async (event) => {
         }
 
         await dbResource.createNew({
-            TableName: process.env.ACTIVE_STREAMS,
+            TableName: process.env.EPHEMERAL_ACTIVE_STREAMS,
             Item: {
                 user_id: data.userId,
                 stream_id: data.streamId,
-                ttl: Math.floor(Date.now() / 1000) + parseInt(process.env.TTL)
+                ttl: Math.floor(Date.now() / 1000) + parseInt(process.env.STREAM_EXPIRY)
             }
         });
 
         const activeStreams = await dbResource.query({
-            TableName: process.env.ACTIVE_STREAMS,
+            TableName: process.env.EPHEMERAL_ACTIVE_STREAMS,
             IndexName: "user_id",
             ExpressionAttributeValues: {
                 ":kv": data.userId
@@ -53,12 +53,12 @@ export const run = async (event) => {
 
         const aliveActiveStreams = intersection(activeStreamsId, isEmpty(currentItem) ? [] : currentItem.Item.streams);
 
-        if (aliveActiveStreams.length < parseInt(process.env.MAX_STREAMS)) {
+        if (aliveActiveStreams.length < parseInt(process.env.MAX_ALLOWED_STREAMS)) {
             aliveActiveStreams.push(data.streamId);
             const streams = [...new Set(aliveActiveStreams)];
             const currentEntityVersion = isEmpty(currentItem) ? newVersion : currentItem.Item.entity_version;
             await dbResource.updateItem({
-                TableName: process.env.STREAMS,
+                TableName: process.env.AGGREGATED_STREAMS_STATUS,
                 Key: {user_id: data.userId},
                 UpdateExpression: "SET #streams = :values, #entity_version = :new_version",
                 ExpressionAttributeNames: {"#streams": "streams", "#entity_version": "entity_version"},

@@ -5,9 +5,9 @@ import MockDate from 'mockdate'
 describe('Ping stream', () => {
     beforeEach(() => {
         process.env.stage = 'test';
-        process.env.ACTIVE_STREAMS = 'active-streams';
-        process.env.STREAMS = 'streams';
-        process.env.TTL = '60';
+        process.env.EPHEMERAL_ACTIVE_STREAMS = 'ephemeral-active-streams-test';
+        process.env.AGGREGATED_STREAMS_STATUS = 'aggregated-streams-status-test';
+        process.env.STREAM_EXPIRY = '60';
     });
 
     it('updates stream with new ttl', async () => {
@@ -33,7 +33,7 @@ describe('Ping stream', () => {
 
         expect(DynamoResource.prototype.putItem).toHaveBeenCalledWith(
             {
-                TableName: process.env.ACTIVE_STREAMS,
+                TableName: process.env.EPHEMERAL_ACTIVE_STREAMS,
                 Item: {
                     user_id: "12",
                     stream_id: "5",
@@ -63,7 +63,7 @@ describe('Ping stream', () => {
 
         expect(DynamoResource.prototype.putItem).toHaveBeenCalledWith(
             {
-                TableName: process.env.ACTIVE_STREAMS,
+                TableName: process.env.EPHEMERAL_ACTIVE_STREAMS,
                 Item: {
                     user_id: "12",
                     stream_id: "5",
