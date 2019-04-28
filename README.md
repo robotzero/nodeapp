@@ -5,15 +5,15 @@ npm install
 serverless dynamodb install
 ```
 
-To set automatic record expiry:
-```
-aws dynamodb --region=us-east-1 --endpoint-url http://localhost:8000 update-time-to-live --table-name ephemeral-active-streams-dev --time-to-live-specification "Enabled=true, AttributeName=ttl"
-```
-
 ## Start
 
 ```bash
 serverless offline start
+```
+
+To set automatic record expiry:
+```
+aws dynamodb --region=us-east-1 --endpoint-url http://localhost:8000 update-time-to-live --table-name ephemeral-active-streams-dev --time-to-live-specification "Enabled=true, AttributeName=ttl"
 ```
 
 ## Optional step to import schema (not needed, it should be imported during start up)
@@ -27,6 +27,13 @@ of in more traditional way:
 ```bash
 aws dynamodb create-table --endpoint-url http://localhost:8000 --region=us-east-1 --cli-input-json file:///$PWD/offline/dynamodb-schema/aggrecated-streams-status.json
 aws dynamodb create-table --endpoint-url http://localhost:8000 --region=us-east-1 --cli-input-json file:///$PWD/offline/dynamodb-schema/ephemeral-active-streams.json
+```
+
+## List content of the tables
+
+```bash
+aws dynamodb scan --region=us-east-1 --endpoint-url http://localhost:8000 --table-name ephemeral-active-streams-dev
+aws dynamodb scan --region=us-east-1 --endpoint-url http://localhost:8000 --table-name aggregated-streams-status-dev
 ```
 
 ## Supported queries

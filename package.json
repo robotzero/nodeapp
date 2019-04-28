@@ -32,7 +32,8 @@
     "serverless-plugin-webpack": "^1.5.1",
     "serverless-webpack": "^4.4.0",
     "webpack": "^3.11.0",
-    "webpack-node-externals": "^1.6.0"
+    "webpack-node-externals": "^1.6.0",
+    "node.extend": ">=1.1.7"
   },
   "jest": {
     "transform": {
