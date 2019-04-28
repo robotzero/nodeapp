@@ -25,7 +25,7 @@ serverless dynamodb migrate
 of in more traditional way:
 
 ```bash
-aws dynamodb create-table --endpoint-url http://localhost:8000 --region=us-east-1 --cli-input-json file:///$PWD/offline/dynamodb-schema/aggrecated-streams-status.json
+aws dynamodb create-table --endpoint-url http://localhost:8000 --region=us-east-1 --cli-input-json file:///$PWD/offline/dynamodb-schema/aggregated-streams-status.json
 aws dynamodb create-table --endpoint-url http://localhost:8000 --region=us-east-1 --cli-input-json file:///$PWD/offline/dynamodb-schema/ephemeral-active-streams.json
 ```
 
@@ -61,7 +61,7 @@ Failed response:
 {"exception":"The table does not have the specified index: user_id"}
 ```
 
-### Request to open new stream
+### Request to keep stream alive
 
 ```bash
 curl -X POST -H "Content-Type:application/json" http://localhost:3000/v1/ping-stream -d '{ "userId":"1", "streamId":"1" }'
@@ -195,7 +195,7 @@ The client app needs to ping v1/ping-stream endpoint every x seconds in order to
 
     The update on aggregated-streams-status-dev is going to be executed potentially
     from couple of lambdas at the same time. Even though update expressions in dynamodb
-    are being atomic it is not enough to prevent a condition when during updating
+    are atomic it is not enough to prevent a condition when during updating
     the data already have been updated by something else.
 
     The get query executed on aggregated-streams-status-dev is also fetching
@@ -233,7 +233,7 @@ The client app needs to ping v1/ping-stream endpoint every x seconds in order to
 
   Incorporation of dynamodb and lambda should allow for fairly easy scaling. Set up around dynamodb throughput provisioning and lambda settings tweaking will have to happen
   in order to use scaling capabilities.
-  Due to the implementation of "poor's man" locking functionality in code and entity versioning, there should not be any issues with race conditions
+  Due to the implementation of optimistic locking functionality in code and entity versioning, there should not be any issues with race conditions
   that would allow users to watch 4 or more streams at the same time.
 
   There is also prevention mechanism that should never allow for the situation where user is stuck and is unable to watch streams because the client never hit v1/close-stream endpoint.
