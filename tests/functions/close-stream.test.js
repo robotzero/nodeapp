@@ -3,13 +3,16 @@ import DynamoResource from "../../src/lib/DynamoResource";
 
 describe('Close stream', () => {
     beforeEach(() => {
-        mockDynamoResource();
+        process.env.IS_OFFLINE = true;
         process.env.stage = 'test';
         process.env.EPHEMERAL_ACTIVE_STREAMS = 'ephemeral-active-streams-test';
         process.env.AGGREGATED_STREAMS_STATUS = 'aggregated-streams-status-test';
     });
 
     it('deletes an item from dynamodb', async () => {
+        DynamoResource.prototype.deleteItem = jest.fn(() => {
+            return Promise.resolve();
+        });
         const event = {
             body: '{"streamId":"5"}'
         };
@@ -61,9 +64,3 @@ describe('Close stream', () => {
         );
     });
 });
-
-function mockDynamoResource () {
-    DynamoResource.prototype.deleteItem = jest.fn(() => {
-        return Promise.resolve();
-    });
-}

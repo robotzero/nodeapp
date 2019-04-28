@@ -4,14 +4,17 @@ import MockDate from "mockdate";
 jest.mock('uuid/v4');
 const uuid = require('uuid/v4');
 
+// This is more integration test than unit test as I decided not to mock all its helpers to see
+// how they cooperate fully under different contexts.
 describe('Open stream', () => {
     beforeEach(() => {
+        process.env.IS_OFFLINE = true;
         process.env.stage = 'test';
         process.env.EPHEMERAL_ACTIVE_STREAMS = 'ephemeral-active-streams-test';
         process.env.AGGREGATED_STREAMS_STATUS = 'streams';
         process.env.STREAM_EXPIRY = '60';
         process.env.MAX_ALLOWED_STREAMS = 3;
-        uuid.mockImplementationOnce(() => '1234').mockImplementationOnce(() => '12345');
+        uuid.mockImplementationOnce(() => '12345').mockImplementationOnce(() => '123456');
     });
 
     it('creates new active stream', async () => {
@@ -29,7 +32,7 @@ describe('Open stream', () => {
         });
 
         DynamoResource.prototype.updateItem = jest.fn(() => {
-            return Promise.resolve({Items: [{streamId: 5, userId: 1}]});
+            return Promise.resolve({});
         });
 
         const event = {
@@ -72,7 +75,7 @@ describe('Open stream', () => {
         });
 
         DynamoResource.prototype.updateItem = jest.fn(() => {
-            return Promise.resolve({Items: [{streamId: 5, userId: 1}]});
+            return Promise.resolve({});
         });
 
         const event = {
@@ -95,7 +98,7 @@ describe('Open stream', () => {
                 Item: {
                     user_id: '1',
                     streams: [],
-                    entity_version: '1234'
+                    entity_version: '12345'
                 }
             },
         );
@@ -138,7 +141,7 @@ describe('Open stream', () => {
                 Key: {user_id: "1"},
                 UpdateExpression: "SET #streams = :values, #entity_version = :new_version",
                 ExpressionAttributeNames: {"#streams": "streams", "#entity_version": "entity_version"},
-                ExpressionAttributeValues: {":values": ["5"], ":new_version": '12345', ":current_entity_version": '1234'},
+                ExpressionAttributeValues: {":values": ["5"], ":new_version": '123456', ":current_entity_version": '12345'},
                 ConditionExpression: '#entity_version = :current_entity_version',
                 ReturnValues: 'ALL_NEW'
             },

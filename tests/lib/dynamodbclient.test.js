@@ -1,12 +1,13 @@
-import dynamodbclient, { run } from '../../src/lib/dynamodbclient';
+import dynamodbclient from '../../src/lib/dynamodbclient';
 import * as AWS from "aws-sdk";
 
 describe('Create dynamodb client', () => {
     it('creates new dynamodb client with production options', async () => {
+        process.env.IS_OFFLINE = false;
         let result = {};
 
         try {
-            result = dynamodbclient({IS_OFFLINE: false});
+            result = dynamodbclient();
         } catch (exception) {
             fail('Test failed ' + exception.message);
         }
@@ -17,10 +18,11 @@ describe('Create dynamodb client', () => {
     });
 
     it('creates new dynamodb client with developtment options', async () => {
+        process.env.IS_OFFLINE = true;
         let result = {};
 
         try {
-            result = dynamodbclient({IS_OFFLINE: true});
+            result = dynamodbclient();
         } catch (exception) {
             fail('Test failed ' + exception.message);
         }

@@ -4,6 +4,7 @@ import MockDate from 'mockdate'
 
 describe('Ping stream', () => {
     beforeEach(() => {
+        process.env.IS_OFFLINE = true;
         process.env.stage = 'test';
         process.env.EPHEMERAL_ACTIVE_STREAMS = 'ephemeral-active-streams-test';
         process.env.AGGREGATED_STREAMS_STATUS = 'aggregated-streams-status-test';
@@ -37,7 +38,7 @@ describe('Ping stream', () => {
                 Item: {
                     user_id: "12",
                     stream_id: "5",
-                    ttl: parseInt(Math.floor(Date.now() / 1000) + 60)
+                    ttl: parseInt(Math.floor(Date.now() / 1000) + parseInt(process.env.STREAM_EXPIRY))
                 }
             },
         );
@@ -67,7 +68,7 @@ describe('Ping stream', () => {
                 Item: {
                     user_id: "12",
                     stream_id: "5",
-                    ttl: parseInt(Math.floor(Date.now() / 1000) + 60)
+                    ttl: parseInt(Math.floor(Date.now() / 1000) + parseInt(process.env.STREAM_EXPIRY))
                 }
             },
         );

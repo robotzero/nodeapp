@@ -1,13 +1,14 @@
 import * as AWS from "aws-sdk";
 
-let options = {};
+const offlineOptions = {
+    region: 'localhost',
+    endpoint: 'http://localhost:8000'
+};
 
-export default function (environment) {
-    if (environment.IS_OFFLINE) {
-        options = {
-            region: 'localhost',
-            endpoint: 'http://localhost:8000',
-        };
-    }
-    return new AWS.DynamoDB.DocumentClient(options);
+const isOffline = () => !!(JSON.parse(String(process.env.IS_OFFLINE).toLowerCase()));
+
+export default function () {
+    return isOffline()
+        ? new AWS.DynamoDB.DocumentClient(offlineOptions)
+        : new AWS.DynamoDB.DocumentClient({});
 }
