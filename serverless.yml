@@ -54,3 +54,37 @@ functions:
       - http:
           method: POST
           path: v1/close-stream
+
+resources:
+  Resources:
+    AggregatedStreamsStatusTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: user_id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: user_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.AGGREGATED_STREAMS_STATUS}
+
+    EphemeralActiveStreamsTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: stream_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: stream_id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.EPHEMERAL_ACTIVE_STREAMS}
