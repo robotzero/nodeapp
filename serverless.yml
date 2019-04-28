@@ -30,6 +30,7 @@ custom:
       port: 8000
       inMemory: true
       migrate: true
+      sharedDb: true
     migration:
       dir: offline/dynamodbSchema
 
@@ -81,9 +82,21 @@ resources:
         AttributeDefinitions:
           - AttributeName: stream_id
             AttributeType: S
+          - AttributeName: user_id
+            AttributeType: S
         KeySchema:
           - AttributeName: stream_id
             KeyType: HASH
+        GlobalSecondaryIndexes:
+            - IndexName: user_id
+              KeySchema:
+                - AttributeName: user_id
+                  KeyType: HASH
+              Projection:
+                ProjectionType: ALL
+              ProvisionedThroughput:
+                ReadCapacityUnits: 1
+                WriteCapacityUnits: 1
         ProvisionedThroughput:
           ReadCapacityUnits: 1
           WriteCapacityUnits: 1

@@ -1,7 +1,7 @@
 import DynamoResource from "../../lib/DynamoResource";
 import dynamodbclient from '../../lib/dynamodbclient';
 import intersection from 'lodash/intersection';
-import getCurrentStreamsMetadata from 'src/functions/open-stream/getCurrentStreamsMetadata';
+import getCurrentStreamsMetadata from './getCurrentStreamsMetadata';
 import getUpdateAggregateStream from "./getUpdateAggregateStream";
 import buildOpenStreamResponse from "./buildOpenStreamResponse";
 
@@ -49,7 +49,6 @@ export const run = async (event) => {
         })).Items.map(activeStream => {
             return activeStream.stream_id;
         });
-
         const aliveActiveStreams = intersection(activeStreams, userStreamStatusMetadata.streams);
 
         await getUpdateAggregateStream(aliveActiveStreams, userStreamStatusMetadata, data)(dbResource);

@@ -10,7 +10,7 @@ describe('Get Update Aggregate Stream', () => {
         process.env.EPHEMERAL_ACTIVE_STREAMS = 'ephemeral-active-streams-test';
         process.env.AGGREGATED_STREAMS_STATUS = 'aggregated-streams-status-test';
         process.env.STREAM_EXPIRY = '60';
-        process.env.MAX_ALLOWED_STREAMS = '3'
+        process.env.MAX_ALLOWED_STREAMS = '3';
         uuid.mockImplementationOnce(() => '12345').mockImplementationOnce(() => '123456');
         DynamoResource.prototype.updateItem = jest.fn(() => {
             return Promise.resolve({});
